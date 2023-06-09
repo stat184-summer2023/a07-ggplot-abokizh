@@ -69,6 +69,10 @@ When you make your plot, you will likely find that the axis range is being set b
 
 ```{r}
 ### Your code here
+Trips %>%
+  filter(as.numeric(edate - sdate) < 3600) %>%
+  ggplot(aes(x=client, y=as.numeric(edate - sdate)/60)) + 
+  geom_boxplot()
 
 
 ```
@@ -103,22 +107,24 @@ You can use [Figure 18.3](https://dtkaplan.github.io/DataComputingEbook/project-
 
 ```{r}
 ### Your Code Here
-
+Trips %>%
+  ggplot(aes(x=lubridate::yday(sdate))) + geom_histogram()
 ```
 
 
-My observations here..... 
+From the histogram we can observe that, because the data is collected in specific time of the year, day of the year is from 275 to 365. The count (density) of bike checkouts gradually decreases from 275 to 365. Top checkouts are somewhere around day 280.
 
 
 ### Day of Week
 
 ```{r}
 ### Your Code Here
-
+Trips %>%
+  ggplot(aes(x=lubridate::wday(sdate))) + geom_histogram()
 ```
 
 
-My observations here..... 
+From the histogram we can see that the cont slightly increases as we get closer to weekends and the top checkout is on Thursday. Starting from Thursday, the amount of checkouts start decreasing.
 
 
 
@@ -126,11 +132,13 @@ My observations here.....
 
 ```{r}
 ### Your Code Here
+Trips %>%
+  ggplot(aes(x=lubridate::hour(sdate))) + geom_histogram()
 
 ```
 
 
-My observations here..... 
+According to the histogram, between 0 and 5 am there are very few bike checkouts. The spike starts around 6 am and lasts till around 9-10 pm. The most bike checkouts are around 5 pm.
 
 
 
@@ -138,11 +146,12 @@ My observations here.....
 
 ```{r}
 ### Your Code Here
-
+Trips %>%
+  ggplot(aes(x=lubridate::minute(sdate))) + geom_histogram()
 ```
 
 
-My observations here..... 
+From the histogram we can see that it is kind of stable. There are really no positive or negative trends when it comes to bike checkouts based on the minute of the hour.
 
 
 ## Question 3: Grouping
@@ -151,10 +160,14 @@ Group the bike rentals by three variables: hour of the day, day of the week, and
 
 ```{r}
 ### My Code here
-
+Trips %>%
+    group_by(hourOfTheDay = lubridate::hour(sdate), dayOfTheWeek = lubridate::wday(sdate), client) %>%
+    dplyr::summarise(count=n()) %>%
+    ggplot(aes(x=hourOfTheDay,y=count)) +
+    geom_point(aes(col = client, )) + facet_wrap(~dayOfTheWeek)
 ```
 
-My comments here.....
+The most checkouts occur between 10am and 8pm and the majority of the people who checkout with bikes are resgistered clients. 
 
 
 ## Question 4: How Far? 
