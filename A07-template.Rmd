@@ -1,7 +1,7 @@
 ---
 title: "A07- ggplot"
-author: "YOUR NAME"
-date: "DATE"
+author: "Abdulaziz Bokijonov"
+date: "June 9, 2023"
 output: html_notebook
 ---
 
@@ -187,12 +187,11 @@ source("https://mdbeckman.github.io/dcSupplement/R/haversine.R")
 Simple <-
   Stations %>%
   select(name, lat, long) %>%
-  rename(sstation = name)
+  dplyr::rename(sstation = name)
 
 Simple2 <-
   Simple %>%
-  rename(estation = sstation, lat2 = lat, long2 = long)
-
+  dplyr::rename(estation = sstation, lat2 = lat, long2 = long)
 ```
 
 Look at the `head()` of `Simple` and `Simple2` and make sure you understand how they are related to `Stations.`
@@ -214,6 +213,7 @@ PairDistances <-
   mutate(distance = haversine(lat, long, lat2, long2)) %>%
   select(sstation, estation, distance)
 
+PairDistances 
 ```
 
 
@@ -227,9 +227,20 @@ Our goal here is to recreate [Figure 18.5](https://dtkaplan.github.io/DataComput
 
 ```{r}
 ### My code here
+TripPairDistance <-
+  Trips %>%
+  inner_join( PairDistances, by = c('sstation','estation') ) %>% 
+  na.omit()  # cleaned up the missing ones
 
+TripPairDistance %>%
+  ggplot(aes(x=distance))  +
+  geom_density(color="blue")
+
+PairDistances %>%
+  ggplot(aes(x=distance))  +
+  geom_density(fill="orange")
 ```
-
+The graphs of trip distance densities and distance between stations is similar. Because people only can leave bikes at the stations, the combination of distance of travel from one station to another should be similar to the combination of pairs of stations. 
 
 
 
@@ -237,7 +248,7 @@ Our goal here is to recreate [Figure 18.5](https://dtkaplan.github.io/DataComput
 
 Look at the variables in `Stations` and `Trips` and explain why `Simple` and `Simple2` were given different variable names for the station. 
 
-Optional Extra credit answer here.....
+Because the point of merging Simple and Simple 2 was to get the combination of stations with their coordinates for the further distance calculation. Thus, we have to give different variable names for stations so one is start and the other is end stations.
 
 
 
